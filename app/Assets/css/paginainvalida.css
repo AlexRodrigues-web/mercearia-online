@@ -1,0 +1,28 @@
+.alertaPagina{
+    margin-top:10px;
+    text-align:center;
+  }
+  .alertaPagina h1{
+    color: #17a2b8;
+  }
+  
+  .alertaPagina a button{
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:25px;
+    margin-bottom:10px;
+    width:30%;
+    background-image:linear-gradient(to bottom right, rgb(255, 255, 255) , #17a2b8);
+    border-radius:5px;
+    border: 1px solid black;
+  }
+  
+  /* @media */
+  @media (max-width:767px) {
+  
+    .alertaPagina a button {
+    width: 80%;
+    }
+  }
+  
+  /* fim @media */
