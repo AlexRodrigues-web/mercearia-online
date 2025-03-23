@@ -1,40 +1,111 @@
-<?php 
+<?php  
 
 namespace Core;
 
-if (!defined("MERCEARIA2021")) // verificar se a constante criada no index, foi definida!
-{   
-    header("Location: http://localhost/mercearia/paginaInvalida/index");
-    die("Erro: Página não encontrada!");
+// Garante que a sessão esteja iniciada corretamente
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
 class ConfigView
 {
-    private $dados;
+    private array $dados;
     private string $rota;
 
-    public function __construct($rota, $dados = null)
+    public function __construct(string $rota, array $dados = [])
     {
         $this->rota = $rota;
-        $this->dados = $dados;        
+        $this->dados = $dados;
     }
 
-    public function renderizar()
+    public function renderizar(): void
     {
-        // Sanitiza a rota para evitar inclusão de arquivos maliciosos
-        $caminhoArquivo = 'app/' . $this->rota . '.php';
-
-        if (file_exists($caminhoArquivo)) {
-            if (is_array($this->dados)) {
-                extract($this->dados, EXTR_OVERWRITE);
-            }
-            include_once $caminhoArquivo;
-        } else {
-            // Log de erro e redirecionamento amigável
-            error_log("Erro ao carregar a view: " . $this->rota);
-            header("Location: http://localhost/mercearia/paginaInvalida/index");
-            exit;
+        // ✅ Garante que `BASE_URL` esteja definida corretamente
+        if (!defined('BASE_URL')) {
+            $this->definirBaseURL();
         }
+
+        // ✅ Obtém o caminho absoluto da view
+        $caminhoArquivo = $this->obterCaminhoView();
+
+        // ✅ Se a view não for encontrada, exibe um aviso ao invés de erro crítico
+        if (!$caminhoArquivo) {
+            if ($this->rota === "home") {
+                echo "<div class='alert alert-warning text-center'>Aviso: A página inicial ainda não foi configurada corretamente.</div>";
+                return;
+            }
+
+            $this->registrarErro("Erro: View '{$this->rota}' não encontrada.");
+            echo "<div class='alert alert-danger text-center'>Erro: A página solicitada não foi encontrada.</div>";
+            return;
+        }
+
+        // ✅ Se existirem dados, sanitiza antes de carregar a View
+        if (!empty($this->dados) && is_array($this->dados)) {
+            extract($this->sanitizarDados($this->dados), EXTR_SKIP);
+        }
+
+        include_once $caminhoArquivo;
+    }
+
+    /**
+     * ✅ Define dinamicamente a BASE_URL, sem precisar de `ConfigController`.
+     */
+    private function definirBaseURL(): void
+    {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'];
+        $scriptDir = trim(dirname($_SERVER['SCRIPT_NAME']), '\\/');
+        define('BASE_URL', "{$protocol}://{$host}/{$scriptDir}/");
+    }
+
+    /**
+     * ✅ Obtém o caminho absoluto da View, validando o acesso seguro.
+     *
+     * @return string|null Retorna o caminho do arquivo se válido, ou `null` caso contrário.
+     */
+    private function obterCaminhoView(): ?string
+    {
+        $caminhoRaiz = realpath(__DIR__ . "/../app/View");
+        $caminhoArquivo = realpath($caminhoRaiz . "/" . str_replace('.', '/', $this->rota) . ".php");
+
+        // 🔒 Garante que a View está dentro da pasta correta (proteção contra Path Traversal)
+        if ($caminhoArquivo && strpos($caminhoArquivo, $caminhoRaiz) === 0) {
+            return $caminhoArquivo;
+        }
+
+        return null;
+    }
+
+    /**
+     * ✅ Sanitiza os dados antes de extrair para a View.
+     */
+    private function sanitizarDados(array $dados): array
+    {
+        return array_map(function ($valor) {
+            if (is_string($valor)) {
+                return htmlspecialchars($valor, ENT_QUOTES, 'UTF-8');
+            } elseif (is_array($valor)) {
+                return $this->sanitizarDados($valor); // Recursivo para arrays multidimensionais
+            }
+            return $valor;
+        }, $dados);
+    }
+
+    /**
+     * ✅ Registra erros no arquivo de logs.
+     */
+    private function registrarErro(string $mensagem): void
+    {
+        $logDir = __DIR__ . '/../logs';
+
+        // Criar diretório de logs se não existir
+        if (!is_dir($logDir) && !mkdir($logDir, 0755, true) && !is_dir($logDir)) {
+            error_log("Erro crítico: Falha ao criar diretório de logs.");
+            return;
+        }
+
+        $logFile = $logDir . '/error.log';
+        file_put_contents($logFile, date("[Y-m-d H:i:s] ") . $mensagem . PHP_EOL, FILE_APPEND);
     }
 }
-?>

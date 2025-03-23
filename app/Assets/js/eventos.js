@@ -1,930 +1,181 @@
-$(document).ready(function(){
+(function ($) {
+    "use strict";
 
-  // adicionar classe de efeito para o botão do menu
-  $('#btn-menu').click( function () {
-    $('#btn-menu').addClass("border-btn-menu");
-  })
+    // ===============================
+    // 🌟 Funções Auxiliares
+    // ===============================
 
-  // exibir detalhes produtos home
-  $('#detalhes-produtos').click(function(){
-      exibirDetalhes('.card-produto','#detalhes-produtos');
-    });
-  // exibir detalhes fornecedores home
-  $('#detalhes-fornecedor').click(function(){
-    exibirDetalhes('.card-fornecedor','#detalhes-fornecedor');
-  });
-  // exibir detalhes funcionários home
-  $('#detalhes-funcionario').click(function(){
-    exibirDetalhes('.card-funcionario','#detalhes-funcionario');
-  });
-  // exibir detalhes caixa home
-  $('#detalhes-caixa').click(function(){
-    exibirDetalhes('.card-caixa','#detalhes-caixa');
-  });
-  
-
-  // função de exibir detalhes home
-  function exibirDetalhes(classe,botao){
-    $(classe).each(function(){
-      if($(this).hasClass('d-none'))
-      {
-        $(botao).html('<i class="fas fa-angle-double-up"></i>');
-        $(this).removeClass('d-none');
-        $(this).addClass('d-block');
-      }
-      else{
-        $(botao).html('Detalhes');
-        $(this).removeClass('d-block');
-        $(this).addClass('d-none');
-      }
-    });
-  };
-
-
-  //remover classe de efeito.
-  $('#menuLateral').on('hidden.bs.collapse', function () {
-    $('#btn-menu').removeClass("border-btn-menu");
-  });
-
-  $('td #link_excluir').click(function(e){
-    e.preventDefault();
-    let href = $(this).attr('href');
-    $('#confirm-delete').modal({show:true});
-    $('#excluir_ok').attr('href',href);
-  });
-
-  //formulários
-
-    //funcionário
-    let f_funcionario = $('#form-funcionario');
-    f_funcionario.submit(function(e)
-    {
-
-      let f_nome = $('#form-nome').val();
-      let f_ativo = $('#form-ativo').val();
-      let f_cargo = $('#form-cargo').val();
-      let f_nivel = $('#form-nivel').val();
-      let f_credencial = $('#form-credencial').val();
-      let f_senha = $('#form-senha').val();
-      let f_pg_privada = [];
-      $("input[name='pg_privada_id[]']:checked").each(function()
-      {
-        f_pg_privada.push(parseInt($(this).val()));
-      });
-
-      let f_validos =[
-        validatamanho(f_nome,0,70),
-        validaBool(f_ativo),
-        validaInt(1,f_cargo),
-        validaInt(1,f_nivel),
-        validatamanho(f_credencial,8,20),
-        validatamanho(f_senha,8,64),
-        validaOpcoes(f_pg_privada)
-      ];
-
-      if(!form_valido(f_validos))
-      {
-        let form_campos = [
-          ['form-nome','*Preencha este campo, limite máximo permitido é 70 caracteres'],
-          ['form-ativo','*Selecione uma opção'],
-          ['form-cargo','*Selecione uma opção'],
-          ['form-nivel','*Selecione uma opção'],
-          ['form-credencial','*A credencial deve conter entre 8 a 20 caracteres'],
-          ['form-senha','*A senha deve conter entre 8 a 64 caracteres'],
-          ['form-pg-privada-id','*Selecione pelo menos uma opção']
-        ];
-    
-        for(let i = 0; i < f_validos.length; i ++)
-        {
-          $('#'+form_campos[i][0]).removeClass('is-invalid');
-          $('#d-'+form_campos[i][0]).remove();
-
-          if(f_validos[i] == false)
-          {
-            let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-            
-            elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-          }
-        }
-        e.preventDefault();
-      }
-    });
-    //fim da validação do formulário de cadastro de funcionário.
-
-    // funcionário atualizar
-
-    let f_a_funcionario = $('#form-atualizar-funcionario');
-    f_a_funcionario.submit(function(e)
-    {
-     
-      let f_a_nome = $('#form-nome').val();
-      let f_a_ativo = $('#form-ativo').val();
-      let f_a_cargo = $('#form-cargo').val();
-      let f_a_nivel = $('#form-nivel').val();
-      let f_a_pg_privada = [];
-      $("input[name='pg_privada_id[]']:checked").each(function()
-      {
-        f_a_pg_privada.push(parseInt($(this).val()));
-      });
-
-      let f_a_validos =[
-        validatamanho(f_a_nome,0,70),
-        validaBool(f_a_ativo),
-        validaInt(1,f_a_cargo),
-        validaInt(1,f_a_nivel),
-        validaOpcoes(f_a_pg_privada)
-      ];
-      
-      if(!form_valido(f_a_validos))
-      {
-        let form_campos = [
-          ['form-nome','*Preencha este campo, limite máximo permitido é 70 caracteres'],
-          ['form-ativo','*Selecione uma opção'],
-          ['form-cargo','*Selecione uma opção'],
-          ['form-nivel','*Selecione uma opção'],
-          ['form-pg-privada-id','*Selecione pelo menos uma opção']
-        ];
-    
-        for(let i = 0; i < f_a_validos.length; i ++)
-        {
-          $('#'+form_campos[i][0]).removeClass('is-invalid');
-          $('#d-'+form_campos[i][0]).remove();
-
-          if(f_a_validos[i] == false)
-          {
-            let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-            
-            elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-          }
-        }
-       
-        e.preventDefault();
-      }
-    });
-    //fim da validação do formulário de atualizar funcionário
-
-    //cargo cadastrar
-    let f_cadastrar = $('#form-cadastrar-cargo');
-    f_cadastrar.submit(function(e)
-    {
-      let f_nome = $('#form-nome').val();
-
-       let f_valido =[
-        validatamanho(f_nome,2,45)
-      ];
-      
-      if(!form_valido(f_valido))
-      {
-        let form_campos = [
-          ['form-nome','*Preencha este campo, limite máximo permitido é 45 caracteres']
-        ];
-    
-        for(let i = 0; i < f_valido.length; i ++)
-        {
-          $('#'+form_campos[i][0]).removeClass('is-invalid');
-          $('#d-'+form_campos[i][0]).remove();
-
-          if(f_valido[i] == false)
-          {
-            let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-            
-            elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-          }
-        }
-       
-        e.preventDefault();
-      }
-    });
-    //fim da validação do formulário de cadastrar cargo
-
-    //cargo atualizar
-    
-    let f_a_cadastrar = $('#form-atualizar-cargo');
-    f_a_cadastrar.submit(function(e)
-    {
-      let f_nome = $('#form-nome').val();
-
-       let f_valido =[
-        validatamanho(f_nome,2,45)
-      ];
-      
-      if(!form_valido(f_valido))
-      {
-        let form_campos = [
-          ['form-nome','*Preencha este campo, limite máximo permitido é 45 caracteres']
-        ];
-    
-        for(let i = 0; i < f_valido.length; i ++)
-        {
-          $('#'+form_campos[i][0]).removeClass('is-invalid');
-          $('#d-'+form_campos[i][0]).remove();
-
-          if(f_valido[i] == false)
-          {
-            let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-            
-            elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-          }
-        }
-       
-        e.preventDefault();
-      }
-    });
-    //fim da validação do formulário de atualizar cargo
-    
-    //estoque atualizar
-    let f_estoque = $('#form-atualizar-estoque');
-    f_estoque.submit(function(e)
-    {
-     
-      let f_quantidade = $('#form-quantidade').val();
-
-      let f_valido =[
-        validaInt(0,f_quantidade)
-      ];
-
-      if(!form_valido(f_valido))
-      {
-        let form_campos = [
-          ['form-quantidade','*Quantidade informada inválida']
-        ];
-    
-        for(let i = 0; i < f_valido.length; i ++)
-        {
-          $('#'+form_campos[i][0]).removeClass('is-invalid');
-          $('#d-'+form_campos[i][0]).remove();
-
-          if(f_valido[i] == false)
-          {
-            let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-            
-            elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-          }
-        }
-       
-        e.preventDefault();
-      }
-
-    });
-    //fim da validação do formulário de atualizar estoque
-
-    // fornecedor cadastrar
-    let f_fornecedor = $('#form-fornecedor');
-    f_fornecedor.submit(function(e)
-    {
-    
-      let f_nome = $('#form-nome').val();
-      let f_cnpj = $('#form-cnpj').val();
-      let f_valido =[
-        validatamanho(f_nome,1,50),
-        validatamanho(f_cnpj,18,18)
-      ];
-
-      if(!form_valido(f_valido))
-      {
-        let form_campos = [
-          ['form-nome','*Preencha este campo, limite máximo permitido é 50 caracteres'],
-          ['form-cnpj','*Cnpj inválido']
-        ];
-    
-        for(let i = 0; i < f_valido.length; i ++)
-        {
-          $('#'+form_campos[i][0]).removeClass('is-invalid');
-          $('#d-'+form_campos[i][0]).remove();
-
-          if(f_valido[i] == false)
-          {
-            let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-            
-            elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-          }
-        }
-       
-        e.preventDefault();
-      }
-
-    });
-    // fim da validação do formulário de cadastro de fornecedor
-
-    //fornecedor atualizar
-    let f_a_fornecedor = $('#form-atualizar-fornecedor');
-    f_a_fornecedor.submit(function(e)
-    {
-      let f_a_nome = $('#form-nome').val();
-      let f_a_cnpj = $('#form-cnpj').val();
-      
-      let f_valido = [
-        validatamanho(f_a_nome,1,50),
-        validatamanho(f_a_cnpj,18,18)
-      ];
-
-      if(!form_valido(f_valido))
-      {
-        let form_campos = [
-          ['form-nome','*Preencha este campo, limite máximo permitido é 50 caracteres'],
-          ['form-cnpj','*Cnpj inválido']
-        ];
-
-        for(let i = 0; i < f_valido.length; i ++)
-        {
-          $('#'+form_campos[i][0]).removeClass('is-invalid');
-          $('#d-'+form_campos[i][0]).remove();
-
-          if(f_valido[i] == false)
-          {
-            let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-            
-            elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-          }
-        }
-
-        e.preventDefault();
-      }
-
-      
-    });
-  // fim da validação do formulário de atualizar fornecedor
-  
-  // nivel cadastrar
-  let f_nivel = $('#form-nivel');
-  f_nivel.submit(function(e)
-  {
-  
-    let f_nome = $('#form-nome').val();
-    let f_valido =[
-      validatamanho(f_nome,1,7)
-    ];
-
-    if(!form_valido(f_valido))
-    {
-      let form_campos = [
-        ['form-nome','*Preencha este campo, limite máximo permitido é 7 caracteres']
-      ];
-  
-      for(let i = 0; i < f_valido.length; i ++)
-      {
-        $('#'+form_campos[i][0]).removeClass('is-invalid');
-        $('#d-'+form_campos[i][0]).remove();
-
-        if(f_valido[i] == false)
-        {
-          let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-          
-          elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-        }
-      }
-     
-      e.preventDefault();
+    // Escapar HTML para prevenir XSS
+    function escaparHTML(texto) {
+        const div = document.createElement("div");
+        div.textContent = texto; // Substitui innerText para melhor segurança
+        return div.innerHTML;
     }
 
-  });
-  // fim da validação do formulário de cadastro de nivel
-
-  //nivel atualizar
-  let f_a_nivel = $('#form-atualizar-nivel');
-  f_a_nivel.submit(function(e)
-  {
-    let f_a_nome = $('#form-nome').val();
-    
-    let f_valido = [
-      validatamanho(f_a_nome,1,7)
-    ];
-
-    if(!form_valido(f_valido))
-    {
-      let form_campos = [
-        ['form-nome','*Preencha este campo, limite máximo permitido é 7 caracteres']
-      ];
-
-      for(let i = 0; i < f_valido.length; i ++)
-      {
-        $('#'+form_campos[i][0]).removeClass('is-invalid');
-        $('#d-'+form_campos[i][0]).remove();
-
-        if(f_valido[i] == false)
-        {
-          let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-          
-          elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-        }
-      }
-
-      e.preventDefault();
+    // Exibir alertas amigáveis com SweetAlert2
+    function showAlert(type, title, message) {
+        Swal.fire({
+            icon: type,
+            title: title,
+            text: message,
+            confirmButtonColor: '#3085d6',
+        });
     }
 
-    
-  });
-// fim da validação do formulário de atualizar nivel
+    // Validar formulário com mensagens customizadas
+    function validateForm(validators, fields) {
+        let isValid = true;
 
-// página privada cadastrar
-let f_paginaPrivada = $('#form-paginaPrivada');
-f_paginaPrivada.submit(function(e)
-{
-  let f_nome = $('#form-nome').val();
-  let f_valido =[
-    validatamanho(f_nome,1,30)
-  ];
+        fields.forEach(([id, errorMessage], index) => {
+            const field = $(`#${id}`);
+            field.removeClass('is-invalid');
+            $(`#d-${id}`).remove();
 
-  if(!form_valido(f_valido))
-  {
-    let form_campos = [
-      ['form-nome','*Preencha este campo, limite máximo permitido é 30 caracteres']
-    ];
-
-    for(let i = 0; i < f_valido.length; i ++)
-    {
-      $('#'+form_campos[i][0]).removeClass('is-invalid');
-      $('#d-'+form_campos[i][0]).remove();
-
-      if(f_valido[i] == false)
-      {
-        let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-        
-        elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-      }
-    }
-   
-    e.preventDefault();
-  }
-
-});
-// fim da validação do formulário de cadastro de página privada
-
-//página privada atualizar
-let f_a_paginaPrivada = $('#form-atualizar-paginaPrivada');
-f_a_paginaPrivada.submit(function(e)
-{
-  let f_a_nome = $('#form-nome').val();
-  
-  let f_valido = [
-    validatamanho(f_a_nome,1,7)
-  ];
-
-  if(!form_valido(f_valido))
-  {
-    let form_campos = [
-      ['form-nome','*Preencha este campo, limite máximo permitido é 30 caracteres']
-    ];
-
-    for(let i = 0; i < f_valido.length; i ++)
-    {
-      $('#'+form_campos[i][0]).removeClass('is-invalid');
-      $('#d-'+form_campos[i][0]).remove();
-
-      if(f_valido[i] == false)
-      {
-        let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-        
-        elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-      }
-    }
-
-    e.preventDefault();
-  }
-
-  
-});
-// fim da validação do formulário de atualizar página privada
-
-// página pública cadastrar
-let f_paginaPublica = $('#form-paginaPublica');
-f_paginaPublica.submit(function(e)
-{
-  let f_nome = $('#form-nome').val();
-  let f_valido =[
-    validatamanho(f_nome,1,30)
-  ];
-
-  if(!form_valido(f_valido))
-  {
-    let form_campos = [
-      ['form-nome','*Preencha este campo, limite máximo permitido é 30 caracteres']
-    ];
-
-    for(let i = 0; i < f_valido.length; i ++)
-    {
-      $('#'+form_campos[i][0]).removeClass('is-invalid');
-      $('#d-'+form_campos[i][0]).remove();
-
-      if(f_valido[i] == false)
-      {
-        let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-        
-        elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-      }
-    }
-   
-    e.preventDefault();
-  }
-
-});
-// fim da validação do formulário de cadastro de página pública
-
-//página privada atualizar
-let f_a_paginaPublica = $('#form-atualizar-paginaPublica');
-f_a_paginaPublica.submit(function(e)
-{
-  let f_a_nome = $('#form-nome').val();
-  
-  let f_valido = [
-    validatamanho(f_a_nome,1,7)
-  ];
-
-  if(!form_valido(f_valido))
-  {
-    let form_campos = [
-      ['form-nome','*Preencha este campo, limite máximo permitido é 30 caracteres']
-    ];
-
-    for(let i = 0; i < f_valido.length; i ++)
-    {
-      $('#'+form_campos[i][0]).removeClass('is-invalid');
-      $('#d-'+form_campos[i][0]).remove();
-
-      if(f_valido[i] == false)
-      {
-        let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-        
-        elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-      }
-    }
-
-    e.preventDefault();
-  }
-
-  
-});
-// fim da validação do formulário de atualizar página pública
-
-// página produto cadastrar
-let f_produto = $('#form-produto');
-f_produto.submit(function(e)
-{
-  let f_nome = $('#form-nome').val();
-  let f_preco = $('#form-preco').val();
-  let f_fornecedor_id = $('#form-fornecedor_id').val();
-  let f_form_kilograma = $('#form-kilograma').val();
-  let f_form_litro = $('#form-litro').val();
-  let f_quantidade = $('#form-quantidade').val();
-
-  let f_validos =[
-    validatamanho(f_nome,1,30),
-    validaFloat(f_preco,0.10),
-    validaInt(1,f_fornecedor_id),
-    validaFloat(f_form_kilograma,0),
-    validaFloat(f_form_litro,0),
-    validaInt(1,f_quantidade)
-  ];
-  
-  if(!form_valido(f_validos))
-  {
-    let form_campos = [
-      ['form-nome','*Preencha este campo, limite máximo permitido é 30 caracteres'],
-      ['form-preco',"* Informe o preço, mínimo 0,10 Reais"],
-      ['form-fornecedor_id','*Selecione uma opção'],
-      ['form-kilograma','*Informe o Kg, mínimo 0,000 kg'],
-      ['form-litro','*Informe o Litro, mínimo 0,000 L'],
-      ['form-quantidade','*Informe a quantidade, mínimo 1']
-    ];
-    
-    for(let i = 0; i < f_validos.length; i ++)
-    {
-      
-      $('#'+form_campos[i][0]).removeClass('is-invalid');
-      $('#d-'+form_campos[i][0]).remove();
-      
-      if(f_validos[i] == false)
-      {
-        let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-        
-        elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-      }
-    }
-    e.preventDefault();
-  }
-
-});
-// fim da validação do formulário de cadastro de produto
-
-//produto atualizar
-
-let f_a_produto = $('#form-atualizar-produto');
-f_a_produto.submit(function(e)
-{
-  let f_nome = $('#form-nome').val();
-  let f_preco = $('#form-preco').val();
-  let f_fornecedor_id = $('#form-fornecedor_id').val();
-  let f_form_kilograma = $('#form-kilograma').val();
-  let f_form_litro = $('#form-litro').val();
-  let f_quantidade = $('#form-quantidade').val();
-
-  let f_validos =[
-    validatamanho(f_nome,1,30),
-    validaFloat(f_preco,0.10),
-    validaInt(1,f_fornecedor_id),
-    validaFloat(f_form_kilograma,0),
-    validaFloat(f_form_litro,0),
-    validaInt(0,f_quantidade)
-  ];
- 
-  
-  if(!form_valido(f_validos))
-  {
-    let form_campos = [
-      ['form-nome','*Preencha este campo, limite máximo permitido é 30 caracteres'],
-      ['form-preco',"* Informe o preço, mínimo 0,10 Reais"],
-      ['form-fornecedor_id','*Selecione uma opção'],
-      ['form-kilograma','*Informe o Kg, mínimo 0,000 kg'],
-      ['form-litro','*Informe o Litro, mínimo 0,000 L'],
-      ['form-quantidade','*Informe a quantidade, mínimo 0']
-    ];
-    
-    for(let i = 0; i < f_validos.length; i ++)
-    {
-      
-      $('#'+form_campos[i][0]).removeClass('is-invalid');
-      $('#d-'+form_campos[i][0]).remove();
-      
-      if(f_validos[i] == false)
-      {
-        let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-        
-        elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-      }
-    }
-    e.preventDefault();
-  }
-
-});
-// fim da validação do formulário de atualizar produto
-
-//perfil atualizar dados
-
-let f_a_perfil = $('#form-atualizar-perfil');
-f_a_perfil.submit(function(e)
-{
-  let f_credencial = $('#form-credencial').val();
-  let f_senhaAtual = $('#form-senhaAtual').val();
-  let f_senha = $('#form-senha').val();
-  let f_senhaRepetida = $('#form-senhaRepetida').val();
-
-  let f_validos =[
-    validatamanho(f_credencial,8,20),
-    validatamanho(f_senhaAtual,8,64),
-    validatamanho(f_senha,8,64),
-    validaSenhaRepetida(f_senha,f_senhaRepetida,8,64)
-  ];
-  
-  if(!form_valido(f_validos))
-  {
-  
-    let form_campos = [
-      ['form-credencial','*Preencha este campo, credencial deve conter entre 8 a 20 caracteres'],
-      ['form-senhaAtual',"*Senha inválida"],
-      ['form-senha','*Informe a nova senha, deve conter entre 8 a 64 caracteres'],
-      ['form-senhaRepetida','*Senha diferente, informe a nova senha e tente novamente'],
-    ];
-    
-    for(let i = 0; i < f_validos.length; i ++)
-    {
-      
-      $('#'+form_campos[i][0]).removeClass('is-invalid');
-      $('#d-'+form_campos[i][0]).remove();
-      
-      if(f_validos[i] == false)
-      {
-        let elemento = $('#'+form_campos[i]).addClass('is-invalid');
-        
-        elemento.after("<div class='invalid-feedback' id=d-"+ form_campos[i][0]+">" +form_campos[i][1] + "</div>");
-      }
-    }
-    e.preventDefault();
-  }
-
-});
-  //fim da atualização do perfil do usuário.
-
-  //caixa cadastrar compra
-  $('body').on('change','#form-valor',function(){
-    $('#d-form-valor').remove();
-    let formaPagamento = $('#form-pagamento').val();
-
-    if(formaPagamento == 'Dinheiro')
-    {
-      $(this).removeClass('is-invalid');
-      $('#d-form-valor').remove();
-
-      let valorCompra = $('#form-total').val();
-      let valorTotal = formatar_real(valorCompra);
-      let pagamentoCliente = $(this).val();
-      pagamentoCliente = formatar_real(pagamentoCliente,false);
-    
-      let resultado = parseFloat(pagamentoCliente - valorTotal).toFixed(2);
-     
-      if(pagamentoCliente >= valorTotal)
-      {
-          resultado = new Intl.NumberFormat('pt-BR',{ style: 'currency', currency: 'BRL' }).format(resultado);
-          pagamentoCliente = new Intl.NumberFormat('pt-BR',{ style: 'currency', currency: 'BRL' }).format(pagamentoCliente);
-          $(this).val(pagamentoCliente);
-          $('#form-troco').val(resultado);
-          $('#form-caixa').off('submit');
-      }
-      else{
-          let mensagem = "";
-          $('#form-troco').val('');
-          $('#form-valor').addClass('is-invalid');
-
-          if(!isNaN(pagamentoCliente)){
-            let restante = parseFloat(resultado * -1).toFixed(2);
-            restante = new Intl.NumberFormat('pt-BR',{ style: 'currency', currency: 'BRL' }).format(restante);
-            mensagem = 'Valor insuficiente, falta '+ restante;
-          }
-          else{
-            mensagem = 'Valor informado inválido!';
-          }
-          $('#form-caixa').submit(function(e){e.preventDefault()});
-          $('#form-valor').after("<div class='invalid-feedback' id='d-form-valor'>" +mensagem+ "</div>");
-      }
-    }
-    else if(formaPagamento != 'Crédito' && formaPagamento != 'Débito'){
-      $('#form-valor').addClass('is-invalid');
-      let mensagem = 'Selecione uma forma de pagamento primeiro!';
-      $('#form-valor').after("<div class='invalid-feedback' id='d-form-valor'>" +mensagem+ "</div>");
-      
-    }
-   
-});
-
-  //cancelar compra alerta
-  $('#cancelarCompra').click(function(e){
-    if(!confirm('Deseja cancelar toda a compra?')){
-      e.preventDefault();
-    };
-  });
-
-  // validação de todos os campos da compra
-  let f_caixa = $('#form-caixa');
-  f_caixa.submit(function(e)
-  {
-    let produtos = [];
-
-    $('input[name="produto_id[]"]').each(function(){
-      produtos.push($(this).val());
-      
-    });
-    let total = $('#form-total').val();
-    let troco = $('#form-troco').val();
-    let pagamento = $('#form-pagamento').val();
-    let dinheiro_cliente = $('#form-valor').val();
-    // verificar se existe produtos adicionados 
-    if(produtos.length > 0)
-    {
-      if(pagamento == 'Dinheiro' || pagamento == 'Crédito' || pagamento == 'Débito')
-      {
-          if(isNaN(formatar_real(dinheiro_cliente))){
-            Swal.fire({icon: 'warning', title: 'Aviso', text: '*Informe um valor válido'}); e.preventDefault();
-          }
-          else{
-            let valorTotal = formatar_real(total);
-
-            if(pagamento == 'Dinheiro')
-            {
-              dinheiro_cliente = formatar_real(dinheiro_cliente,false);
-              if(dinheiro_cliente > valorTotal){
-                $('#form-caixa').off('submit');
-                $('#btn_cadastrar').off('click');
-              }
-              else{e.preventDefault()};
+            if (!validators[index]) {
+                field.addClass('is-invalid');
+                field.after(`<div class="invalid-feedback" id="d-${id}">${escaparHTML(errorMessage)}</div>`);
+                isValid = false;
             }
-            else{
-              dinheiro_cliente = formatar_real(dinheiro_cliente,false);
-              if(dinheiro_cliente > valorTotal)
-              {
-                $('#form-caixa').off('submit');
-                $('#btn_cadastrar').off('click');
-              }
-              else{e.preventDefault()};
-            } 
-          }
-      }
-      else{
-        Swal.fire({icon: 'info', title: 'Selecione uma opção', text: 'Selecione uma forma de pagamento'}); e.preventDefault();
-      }
-    }
-    else{
-      Swal.fire({icon: 'error', title: 'Erro', text: 'Adicione produtos primeiro!'});
-      e.preventDefault();
-    }
-    
-  });
+        });
 
-  // funções de validação
-  function validaOpcoes(array)
-  {
-    if(array.length <= 0)
-    {
-      return false;
+        return isValid;
     }
 
-    for(let i=0;i < array.length; i ++)
-    { 
-       if(!validaInt(1,array[i]))
-      {
-        return false;
-      }
-    }
-    return true;  
-  }
-
-  function validatamanho(variavel,minimo, maximo)
-  { 
-    if(variavel.length == 0 || variavel.length < minimo || variavel.length > maximo){
-     
-      return false;
-    }
-    return true;
-  }
-
-  function validaInt(minimo,valor)
-  {
-    parseInt(valor,10);
-
-    if(isNaN(valor)){
-      return false;
+    // Formatar valor como moeda (BRL)
+    function formatCurrency(value) {
+        const num = parseFloat(value.replace(/[^\d,.-]/g, '').replace(',', '.'));
+        return isNaN(num) ? 0 : num;
     }
 
-    else if (valor < parseInt(minimo))
-    {
-      return false;
-    }
-    return true;
-  }
-  function validaBool(variavel)
-  {
-    parseInt(variavel);
+    // ===============================
+    // 📂 Interatividade com Botões
+    // ===============================
 
-    if(isNaN(variavel)){
-      return false;
-    }
+    // Efeito no botão do menu
+    $('#btn-menu').click(function () {
+        $(this).toggleClass("border-btn-menu");
+    });
 
-    else if(variavel < 0 || variavel > 1){
-      return false;
-    }
-    return true;
-  }
+    // Exibir/ocultar detalhes de seções
+    const sections = [
+        { button: '#detalhes-produtos', target: '.card-produto' },
+        { button: '#detalhes-fornecedor', target: '.card-fornecedor' },
+        { button: '#detalhes-funcionario', target: '.card-funcionario' },
+        { button: '#detalhes-caixa', target: '.card-caixa' },
+    ];
 
-  function validaFloat(variavel,minimo)
-  {
-    variavel = variavel.replace('.','');
-    variavel = variavel.replace(',','.');
+    sections.forEach(({ button, target }) => {
+        $(button).click(() => {
+            $(target).toggleClass('d-none d-block');
+            $(button).text($(target).hasClass('d-none') ? 'Detalhes' : 'Ocultar');
+        });
+    });
 
-    parseFloat(variavel);
+    // ===============================
+    // 🗑️ Modal de Confirmação para Exclusão
+    // ===============================
 
-    if(isNaN(variavel)){
-      return false;
-    }
+    $('body').on('click', '.link_excluir', function (e) {
+        e.preventDefault();
+        const href = $(this).attr('href');
 
-    else if(variavel < parseFloat(minimo)){
-      return false;
-    }
+        Swal.fire({
+            title: 'Você tem certeza?',
+            text: "Esta ação não poderá ser desfeita!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = href;
+            }
+        });
+    });
 
-  return true;
-  }
+    // ===============================
+    // 👤 Validação do Formulário de Funcionários
+    // ===============================
 
-  function form_valido(dados)
-  {
-    for(let i = 0; i < dados.length; i++)
-    {
-      if(!dados[i]){
-        
-       return false;
-      }
-    }
-    return true;
-  }
-  function validaSenhaRepetida(senha,senhaRepetida,minimo,maximo)
-  {
-    if(senhaRepetida.length < minimo || senhaRepetida.length > maximo || senhaRepetida != senha)
-    {
-      return false;
-    }
-    return true;
-  }
-  function formatar_real(valor,sifrao = true)
-  {
+    $('#form-funcionario').submit(function (e) {
+        const nome = $('#form-nome').val();
+        const ativo = $('#form-ativo').val();
+        const cargo = $('#form-cargo').val();
+        const nivel = $('#form-nivel').val();
+        const credencial = $('#form-credencial').val();
+        const senha = $('#form-senha').val();
+        const paginasPrivadas = $("input[name='pg_privada_id[]']:checked").length;
 
-      if(sifrao){
-        valor = valor.replace('R$','');
-      }
-      valor = valor.replace(/[^0-9\,]+/g,'');
-      valor = valor.replace(',','.');
+        const validators = [
+            nome.length >= 1 && nome.length <= 70,
+            Number.isInteger(parseInt(ativo)),
+            Number.isInteger(parseInt(cargo)),
+            Number.isInteger(parseInt(nivel)),
+            credencial.length >= 8 && credencial.length <= 20,
+            senha.length >= 8 && senha.length <= 64,
+            paginasPrivadas > 0,
+        ];
 
-      valor = parseFloat(valor);
-      return valor;
-    }
-})
+        const fields = [
+            ['form-nome', '*Preencha este campo. Máximo: 70 caracteres.'],
+            ['form-ativo', '*Selecione uma opção.'],
+            ['form-cargo', '*Selecione um cargo.'],
+            ['form-nivel', '*Selecione um nível.'],
+            ['form-credencial', '*Credencial deve ter entre 8 e 20 caracteres.'],
+            ['form-senha', '*Senha deve ter entre 8 e 64 caracteres.'],
+            ['form-pg-privada-id', '*Selecione pelo menos uma página.'],
+        ];
 
-// Função para exibir alertas customizados (centralizada)
-const showAlert = (type, title, message) => {
-    Swal.fire({icon: type, title: title, text: message});
-};
+        if (!validateForm(validators, fields)) {
+            e.preventDefault();
+        }
+    });
+
+    // ===============================
+    // 💵 Cálculo de Troco no Formulário de Caixa
+    // ===============================
+
+    $('#form-valor').on('input', function () {
+        const formaPagamento = $('#form-pagamento').val();
+        const valorTotal = formatCurrency($('#form-total').val());
+        const pagamentoCliente = formatCurrency($(this).val());
+
+        $('#d-form-valor').remove();
+        if (formaPagamento === 'Dinheiro' && pagamentoCliente >= valorTotal) {
+            const troco = (pagamentoCliente - valorTotal).toFixed(2);
+            $('#form-troco').val(
+                new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(troco)
+            );
+            $(this).removeClass('is-invalid');
+        } else {
+            $(this).addClass('is-invalid');
+            $('#form-troco').val('');
+            const mensagem = pagamentoCliente < valorTotal ? 'Valor insuficiente.' : 'Forma de pagamento inválida.';
+            $(this).after(`<div class="invalid-feedback" id="d-form-valor">${mensagem}</div>`);
+        }
+    });
+
+    // ===============================
+    // 🚫 Confirmação para Cancelamento de Compra
+    // ===============================
+
+    $('#cancelarCompra').click(function (e) {
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Deseja cancelar toda a compra?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sim, cancelar!',
+            cancelButtonText: 'Não',
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                e.preventDefault();
+            }
+        });
+    });
+
+})(jQuery);

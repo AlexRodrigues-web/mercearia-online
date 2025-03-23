@@ -1,47 +1,53 @@
-$(document).ready(function() {
-    $('#listar-produtos').DataTable( {
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese-Brasil.json"
+$(document).ready(function () {
+    // ===============================
+    // 🌟 Configuração Padrão para DataTables
+    // ===============================
+
+    const dataTableConfig = {
+        responsive: true,
+        deferRender: true, // Melhora a performance para grandes tabelas
+        pagingType: "simple_numbers", // Tipo de paginação
+        language: {
+            url: window.BASE_URL + "/app/Assets/dataTables/Portuguese-Europe.json", // Usando variável global
         },
-        "order":[[8,'desc']]
-    });
-    $('#listar-fornecedores').DataTable( {
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese-Brasil.json"
-        },
-        "order":[[3,'desc']]
-    });
-    $('#listar-estoque').DataTable( {
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese-Brasil.json"
+    };
+
+    // ===============================
+    // 🌟 Função para Iniciar DataTables
+    // ===============================
+    function iniciarTabela(selector, orderColumn = null) {
+        const config = { ...dataTableConfig };
+        if (orderColumn !== null) {
+            config.order = [[orderColumn, "desc"]];
         }
-    });
-    $('#listar-cargos').DataTable( {
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese-Brasil.json"
-        }
-    });
-    $('#listar-nivel').DataTable( {
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese-Brasil.json"
-        }
-    });
-    $('#listar-paginas-publicas').DataTable( {
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese-Brasil.json"
-        },
-        "order":[[2,'desc']]
-    });
-    $('#listar-paginas-privadas').DataTable( {
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese-Brasil.json"
-        },
-        "order":[[2,'desc']]
-    });
-    $('#listar-funcionarios').DataTable( {
-        "language": {
-            "url": "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Portuguese-Brasil.json"
-        },
-        "order":[[5,'desc']]
-    });
+        $(selector).DataTable(config);
+    }
+
+    // ===============================
+    // 📊 Iniciar Tabelas com DataTables
+    // ===============================
+
+    // Produtos
+    iniciarTabela("#listar-produtos", 8);
+
+    // Fornecedores
+    iniciarTabela("#listar-fornecedores", 3);
+
+    // Estoque
+    iniciarTabela("#listar-estoque");
+
+    // Cargos
+    iniciarTabela("#listar-cargos");
+
+    // Níveis
+    iniciarTabela("#listar-nivel");
+
+    // Páginas Públicas
+    iniciarTabela("#listar-paginas-publicas", 2);
+
+    // Páginas Privadas
+    iniciarTabela("#listar-paginas-privadas", 2);
+
+    // Funcionários
+    iniciarTabela("#listar-funcionarios", 5);
 });

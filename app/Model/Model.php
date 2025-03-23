@@ -1,149 +1,165 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Model;
 
 use PDO;
 use PDOException;
+use PDOStatement;
+use App\Model\ConexaoModel;
 
-class Model extends Conexao
+class Model extends ConexaoModel
 {
-    protected $conn;
-    private $query;
+    protected ?PDO $conn = null;
+    private ?PDOStatement $query = null;
     private object $alerta;
-    protected $mensagem;
-    private $resultado;
+    protected ?string $mensagem = null;
 
     public function __construct()
     {
-        $this->conn = parent::conectar();
-        $this->alerta = new \App\Model\Alerta();
+        try {
+            $this->conn = parent::conectar();
+            if (!$this->conn instanceof PDO) {
+                throw new PDOException("Falha ao conectar com o banco de dados.");
+            }
+        } catch (PDOException $e) {
+            error_log("Erro na conexão do Model: " . $e->getMessage());
+            throw new PDOException("Erro ao conectar com o banco de dados. Verifique os logs.");
+        }
+
+        $this->alerta = new \App\Model\AlertaModel();
     }
 
-    final protected function alertaFalha(string $mensagem): string
+    // ================================
+    // 🔍 BUSCAR PERMISSÕES DO USUÁRIO
+    // ================================
+    public function buscarPermissoesUsuario(int $usuarioId): array
     {
-        $this->mensagem = $this->alerta->alertaFalha($mensagem);
-        return $this->mensagem;
+        try {
+            $sql = "SELECT p.nome FROM usuario_permissao up
+                    JOIN permissao p ON up.permissao_id = p.id
+                    WHERE up.usuario_id = :usuario_id";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(':usuario_id', $usuarioId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $permissoes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            return $permissoes ?: [];
+        } catch (PDOException $e) {
+            error_log("Erro ao buscar permissões do usuário: " . $e->getMessage());
+            return [];
+        }
     }
 
-    final protected function alertaSucesso(string $mensagem): string
-    {
-        $this->mensagem = $this->alerta->alertaSucesso($mensagem);
-        return $this->mensagem;
-    }
-
-    final protected function alertaBemvindo(string $mensagem): string
-    {
-        $this->mensagem = $this->alerta->alertaBemvindo($mensagem);
-        return $this->mensagem;
-    }
-
+    // =================================
+    // 📌 MÉTODOS AUXILIARES DE CONSULTA
+    // =================================
     final protected function projetarTodos(string $query): array
     {
-        $this->query = $this->conn->prepare($query);
-        $this->query->execute();
-        return $this->query->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    final protected function projetarExpecifico(string $query, array $parametros = [], bool $unico = true)
-    {
-        $this->query = $this->conn->prepare($query);
-        $this->parametros($this->query, $parametros);
-        $this->query->execute();
-
-        return $unico ? $this->query->fetch(PDO::FETCH_ASSOC) : $this->query->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    final protected function implementar(string $query, array $parametros = []): void
-    {
-        $this->query = $this->conn->prepare($query);
-        $this->parametros($this->query, $parametros);
-        $this->query->execute();
-    }
-
-    final protected function existeCamposFormulario(array $dados, array $obrigatorio, int $tamanho): bool
-    {
-        foreach ($obrigatorio as $campo) {
-            if (!isset($dados[$campo]) || empty(trim($dados[$campo]))) {
-                return false;
-            }
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (PDOException $e) {
+            error_log("Erro em projetarTodos: " . $e->getMessage());
+            return [];
         }
-        return count($dados) >= $tamanho;
     }
 
-    final protected function formularioValido(array $validacao): bool
+    final protected function projetarEspecifico(string $query, array $parametros = [], bool $unico = true): ?array
     {
-        foreach ($validacao as $valido) {
-            if (!$valido) {
-                return false;
-            }
+        try {
+            $stmt = $this->conn->prepare($query);
+            $this->parametros($stmt, $parametros);
+            $stmt->execute();
+
+            return $unico ? ($stmt->fetch(PDO::FETCH_ASSOC) ?: null) : ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []);
+        } catch (PDOException $e) {
+            error_log("Erro em projetarEspecifico: " . $e->getMessage());
+            return null;
         }
-        return true;
     }
 
-    private function parametros($query, array $parametros = []): void
+    final protected function implementar(string $query, array $parametros = []): bool
+    {
+        try {
+            if (!$this->conn) {
+                throw new PDOException("Conexão com o banco de dados não inicializada.");
+            }
+
+            $this->conn->beginTransaction();
+            $stmt = $this->conn->prepare($query);
+            $this->parametros($stmt, $parametros);
+            $sucesso = $stmt->execute();
+            $this->conn->commit();
+            return $sucesso;
+        } catch (PDOException $e) {
+            if ($this->conn->inTransaction()) {
+                $this->conn->rollBack();
+            }
+            error_log("Erro em implementar: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // =================================
+    // 🛠️ MÉTODOS AUXILIARES DE VALIDAÇÃO
+    // =================================
+    private function parametros(PDOStatement $stmt, array $parametros = []): void
     {
         foreach ($parametros as $parametro => $valor) {
-            $this->valoresParam($query, $parametro, $valor);
+            $this->valoresParam($stmt, $parametro, $valor);
         }
     }
 
-    private function valoresParam($query, string $parametro, $valor): void
+    private function valoresParam(PDOStatement $stmt, string $parametro, mixed $valor): void
     {
-        $query->bindValue(":$parametro", $valor);
+        $tipo = match (true) {
+            is_int($valor) => PDO::PARAM_INT,
+            is_bool($valor) => PDO::PARAM_BOOL,
+            is_null($valor) => PDO::PARAM_NULL,
+            default => PDO::PARAM_STR,
+        };
+
+        $stmt->bindValue(":$parametro", $valor, $tipo);
     }
 
-    final protected function valida_int($campo, string $chave, string $mensagem, int $minimo): bool
+    // =================================
+    // 🔐 VALIDAÇÕES DE CAMPOS NUMÉRICOS
+    // =================================
+    final protected function valida_int(mixed $campo, string $chave, string $mensagem, int $minimo): bool
     {
-        $campo = intval($campo);
-        if ($campo < $minimo) {
-            $_SESSION['Erro_form'][$chave] = $mensagem;
+        $campo = filter_var($campo, FILTER_VALIDATE_INT);
+        if ($campo === false || $campo < $minimo) {
+            $this->registrarErroFormulario($chave, $mensagem);
             return false;
         }
         return true;
     }
 
-    final protected function valida_float($campo, string $chave, string $mensagem, float $minimo): bool
+    final protected function valida_float(mixed $campo, string $chave, string $mensagem, float $minimo): bool
     {
-        $campo = $this->converteFloat($campo);
-        if ($campo < $minimo) {
-            $_SESSION['Erro_form'][$chave] = $mensagem;
+        $campo = filter_var($campo, FILTER_VALIDATE_FLOAT);
+        if ($campo === false || $campo < $minimo) {
+            $this->registrarErroFormulario($chave, $mensagem);
             return false;
         }
         return true;
     }
 
-    final protected function valida_date($campo, string $chave, string $mensagem): bool
+    private function registrarErroFormulario(string $chave, string $mensagem): void
     {
-        $date = \DateTime::createFromFormat('Y-m-d', $campo);
-        if (!$date || $date->format('Y-m-d') !== $campo) {
-            $_SESSION['Erro_form'][$chave] = $mensagem;
-            return false;
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
-        return true;
+        $_SESSION['Erro_form'][$chave] = $mensagem;
     }
 
-    final protected function valida_tamanho(string $variavel, string $chave, string $mensagem, int $maximo, int $minimo): bool
+    final protected function converteFloat(mixed $valor): float
     {
-        $variavel = trim($variavel);
-        if (strlen($variavel) < $minimo || strlen($variavel) > $maximo) {
-            $_SESSION['Erro_form'][$chave] = $mensagem;
-            return false;
-        }
-        return true;
-    }
-
-    final protected function valida_bool($variavel, string $chave, string $mensagem): bool
-    {
-        if (!is_bool($variavel)) {
-            $_SESSION['Erro_form'][$chave] = $mensagem;
-            return false;
-        }
-        return true;
-    }
-
-    final protected function converteFloat($valor): float
-    {
-        $valor = str_replace(['.', ','], ['', '.'], $valor);
-        return floatval($valor);
+        $valor = str_replace(',', '.', str_replace('.', '', (string) $valor));
+        return filter_var($valor, FILTER_VALIDATE_FLOAT) ?: 0.0;
     }
 }

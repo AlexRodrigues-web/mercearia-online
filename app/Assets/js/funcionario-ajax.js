@@ -1,96 +1,85 @@
-function dadosCadastro()
-{
-    $.post("http://localhost/mercearia/funcionario/funcionarioAjax",function(result){
-    try{
-        let objeto = JSON.parse(result);
-        let text = "";
+// Função para escapar HTML e prevenir XSS
+function escaparHTML(texto) {
+    let div = document.createElement("div");
+    div.innerText = texto;
+    return div.innerHTML;
+}
 
-        function listar(item)
-        {
-            text +="<option value='" + item['id'] +"' >" + item['nome'] + "</option>"; 
-        }
-        function checkmultiplo(item)
-        {
-            text += "<div class='form-check'><input type = 'checkbox' id = 'pagina"+item['id']+"' name = 'pg_privada_id[]' value = '"+item['id']+"'class='form-check-input'";
-            if(item['nome'] == 'Home'){text+='checked'};
-            text+="><label for = 'pagina"+item['id']+"'class='form-check-label'>"+item['nome']+"</label></div>";
-        }
-
-       
-        objeto['cargo'].forEach(listar);
-        $("#form-cargo").append(text);
-
-        text = "";
-        objeto['nivel'].forEach(listar);
-        $("#form-nivel").append(text);
-
-        text = "";
-        objeto['pagina'].forEach(checkmultiplo);
-        $("#form-pg-privada-id").append(text);
-
-    }
-    catch(err){ 
-        // encaminhar para a página home exibindo um alerta sobre o erro
-        window.location.replace("http://localhost/mercearia/home");
-    }
-    })
-    
-} 
-
-function dadosAtualizar()
-{
-    let id = $("input[type='hidden'][name='id']").val();
-    let cargo = $("#option_padrao_cargo").val();
-    let nivel = $("#option_padrao_nivel").val();
-   
-    $.post("http://localhost/mercearia/funcionario/funcionarioDetalhesAjax",{id:id},function(result){
-        
-        try{
+// Função reutilizável para preencher formulários
+function preencherFormulario(url, idFuncionario = null, cargoAtual = null, nivelAtual = null) {
+    $.post(url, idFuncionario ? { id: idFuncionario } : {}, function (result) {
+        try {
             let objeto = JSON.parse(result);
-            let text = "";
-            let campo = cargo;
-            let id_paginas_funcionario=[];
 
-            for(let i = 0; i <objeto['f_paginas'].length; i++)
-            {
-                id_paginas_funcionario.push(objeto['f_paginas'][i]['f_paginas_id']);
+            if (!objeto || typeof objeto !== 'object') {
+                throw new Error('Dados inválidos recebidos.');
             }
 
-            function listar(item)
-            {
-                if(item['id'] != campo){
-                    text +="<option value=" + item['id'] + ">" + item['nome'] + "</option>"; 
+            // Função para montar as opções do select
+            function montarOpcoes(item, campoAtual) {
+                if (item.id != campoAtual) {
+                    return `<option value="${item.id}">${escaparHTML(item.nome)}</option>`;
                 }
+                return '';
             }
 
-            function checkmultiplo(item)
-            {
-                text += "<div class='form-check'><input type = 'checkbox' id = 'pagina"+item['id']+"' name = 'pg_privada_id[]' value = '"+item['id']+"'class='form-check-input'";
-            
-                if(id_paginas_funcionario.includes(item['id'])){text+='checked'};
-                text+="><label for = 'pagina"+item['id']+"'class='form-check-label'>"+item['nome']+"</label></div>";
-            
+            // Função para montar os checkboxes das páginas privadas
+            function montarCheckbox(item, paginasSelecionadas) {
+                const isChecked = paginasSelecionadas.includes(item.id) ? 'checked' : '';
+                return `
+                    <div class='form-check'>
+                        <input type='checkbox' id='pagina${item.id}' name='pg_privada_id[]' value='${item.id}' class='form-check-input' ${isChecked}>
+                        <label for='pagina${item.id}' class='form-check-label'>${escaparHTML(item.nome)}</label>
+                    </div>
+                `;
             }
 
-            objeto['cargo'].forEach(listar);
-            $("#form-cargo").append(text);
+            // Cargos
+            let cargosHtml = objeto.cargo ? objeto.cargo.map(item => montarOpcoes(item, cargoAtual)).join('') : '';
+            $("#form-cargo").html(cargosHtml);
 
-            text = "";
-            campo = nivel;
-            objeto['nivel'].forEach(listar);
-            $("#form-nivel").append(text);
+            // Níveis
+            let niveisHtml = objeto.nivel ? objeto.nivel.map(item => montarOpcoes(item, nivelAtual)).join('') : '';
+            $("#form-nivel").html(niveisHtml);
 
-            text= "";
-            objeto['paginas'].forEach(checkmultiplo);
-            $("#form-pg-privada-id").append(text);
+            // Páginas Privadas
+            let paginasSelecionadas = idFuncionario && objeto.f_paginas ? objeto.f_paginas.map(p => p.f_paginas_id) : [];
+            let paginasHtml = objeto.paginas ? objeto.paginas.map(item => montarCheckbox(item, paginasSelecionadas)).join('') : '';
+            $("#form-pg-privada-id").html(paginasHtml);
 
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro ao carregar os dados',
+                text: 'Houve um erro ao processar as informações. Tente novamente.',
+                confirmButtonColor: '#d33'
+            }).then(() => {
+                window.location.replace(window.BASE_URL + "/home");
+            });
         }
-        catch(err){ 
-            // encaminhar para a página home exibindo um alerta sobre o erro
-            window.location.replace("http://localhost/mercearia/home");
-        }
-    })
-    
-} 
+    }).fail(function () {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro de Conexão',
+            text: 'Não foi possível carregar os dados. Verifique sua conexão.',
+            confirmButtonText: 'Recarregar',
+            confirmButtonColor: '#3085d6'
+        }).then(() => {
+            location.reload();
+        });
+    });
+}
 
+// Função para preencher os dados de cadastro de funcionários
+function dadosCadastro() {
+    preencherFormulario(window.BASE_URL + "/funcionario/funcionarioAjax");
+}
 
+// Função para preencher os dados de atualização de funcionários
+function dadosAtualizar() {
+    let id = $("input[type='hidden'][name='id']").val();
+    let cargoAtual = $("#option_padrao_cargo").val();
+    let nivelAtual = $("#option_padrao_nivel").val();
+
+    preencherFormulario(window.BASE_URL + "/funcionario/funcionarioDetalhesAjax", id, cargoAtual, nivelAtual);
+}

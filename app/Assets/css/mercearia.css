@@ -1,470 +1,264 @@
+/* ==========================
+   🌟 ESTILO MODERNO PARA MERCEARIA
+   Autor: ChatGPT (Custom)
+   ========================== */
+
+/* 🎨 Importa fontes modernas */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+/* 🎨 Paleta de Cores */
+:root {
+    --cor-primaria: #007bff;
+    --cor-secundaria: #17a2b8;
+    --cor-sucesso: #28a745;
+    --cor-perigo: #dc3545;
+    --cor-aviso: #ffc107;
+    --cor-fundo-claro: #f8f9fa;
+    --cor-fundo-escuro: #343a40;
+    --cor-texto-claro: #ffffff;
+    --cor-texto-escuro: #212529;
+    --cor-borda: #dddddd;
+    --cor-hover: rgba(255, 255, 255, 0.2);
+
+    /* 🌑 Modo Escuro Automático */
+    --cor-fundo: var(--cor-fundo-claro);
+    --cor-texto: var(--cor-texto-escuro);
+}
+
+/* 🌑 Ativa o modo escuro automaticamente */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --cor-fundo: var(--cor-fundo-escuro);
+        --cor-texto: var(--cor-texto-claro);
+    }
+}
+
+/* ========= 🌍 GLOBAL ========= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
 body {
-  font-size: .875rem;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    transition: background 0.3s, color 0.3s;
 }
 
-.feather {
-  width: 16px;
-  height: 16px;
-  vertical-align: text-bottom;
+/* ✅ Mantém o footer sempre no final da página */
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-/* barra de rolagem */
-
-*::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
-}
-
-*::-webkit-scrollbar-track {
-  background-color: #e4e4e4;
-  border-radius: 100px;
-}
-
-*::-webkit-scrollbar-thumb {
-  background-image: linear-gradient(180deg, rgb(23,162,184) 0%, rgba(23,162,184,0.4)  60%);
-  box-shadow: inset 2px 2px 5px 0 rgba(#fff, 0.5);
-  border-radius: 100px;
-}
-/*
- * Sidebar
- */
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
-  padding: 136px 0 0;
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-}
-
-#menuLateral ul:last-child {
-  padding-bottom: 1.5rem!important;
-}
-
-.sidebar-sticky {
-  position: relative;
-  top: 0;
-  height: 80vh;
-  padding-top: .5rem;
-  overflow-x: hidden;
-  overflow-y: auto; 
-}
-
-@supports ((position: -webkit-sticky) or (position: sticky)) {
-  .sidebar-sticky {
-    position: -webkit-sticky;
-    position: sticky;
-  }
-}
-
-.sidebar .nav-link {
-  font-weight: 500;
-  color: #333;
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.sidebar .nav-link .feather {
-  margin-right: 4px;
-  color: #999;
+.content {
+    flex: 1;
 }
 
-.sidebar .nav-link.active {
-  color: #007bff;
+footer {
+    margin-top: auto;
+    background-color: var(--cor-fundo-claro);
+    padding: 15px 0;
+    text-align: center;
+    width: 100%;
+    border-top: 3px solid var(--cor-secundaria);
 }
 
-.sidebar .nav-link:hover .feather,
-.sidebar .nav-link.active .feather {
-  color: inherit;
+/* ========= 🏠 CONTAINERS ========= */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
 }
 
-.sidebar-heading {
-  font-size: .75rem;
-  text-transform: uppercase;
+/* ========= 🏷️ TIPOGRAFIA ========= */
+h1, h2, h3 {
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
-/*
- * Navbar
- */
-
-.navbar-brand {
-  padding-top: .75rem;
-  padding-bottom: .75rem;
-  font-size: 1rem;
-  background-color: rgba(0, 0, 0, .25);
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
-}
-
-.navbar .navbar-toggler {
-  top: .25rem;
-  right: 1rem;
-}
-
-.navbar .form-control {
-  padding: .75rem 1rem;
-  border-width: 0;
-  border-radius: 0;
-}
-
-.form-control-dark {
-  color: #fff;
-  background-color: rgba(255, 255, 255, .1);
-  border-color: rgba(255, 255, 255, .1);
+h1 {
+    text-align: center;
+    color: var(--cor-primaria);
+    font-size: 2rem;
 }
 
-.form-control-dark:focus {
-  border-color: transparent;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+/* ✅ Ajuste de acessibilidade */
+h1, h2, h3, p, a {
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.1);
 }
 
-#btn-menu{
-  border: 2px solid;
+p {
+    font-size: 1rem;
+    line-height: 1.6;
 }
-/* classe de efeito do botão menu */
-.border-btn-menu{
-  border: 5px solid;
-  background-image: linear-gradient(0deg, rgb(247, 240, 200), transparent);
-}
-
-/* padrão alerta */
-.alertaErro{
-  background-color: rgb(243, 54, 29);
-  color:white;
-}
-.alertaSucesso{
-  background-color:rgb(50, 223, 35);
-  font-weight: bold;
-  font-size: 13pt;
-}
-.alertaBemvindo{
-  background-color: #17a2b8;
-  color:white;
-  font-size: 13pt;
-  font-style: italic;
-  font-weight: 600;
-  margin: 0 15px 20px;
-}
 
-.alertaErro, .alertaSucesso {
-  margin: 0 45px 20px;
-}
-/* alerta dentro de modal de cadastro */
-#modalCadastrar .alertaErro{
-  margin:0;
-}
-/* conteudo principal*/
-.principal{
-  min-height: 83vh;
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 60px;
-}
-/* menu lateral*/
-#menuLateral{
-  background-color: rgb(226, 232, 233);
+/* ========= 📋 FORMULÁRIOS ========= */
+form {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
-/* main */
-main{
-  height: 100%;
-  padding-top:25px;
-}
 
-/* footer */
-.footer {
-  color: black;
-  bottom: 0;
-  width: 100%;
-  height: 60px;
-  line-height: 60px;
-  background-color: #17a2b8;
-  position:absolute;
-}
-#link-sair{
-  background-color:rgb(255,38,25);
-  color:white;
-}
-#link-sair:hover{
-   background-image:linear-gradient(to right, rgb(100,0,0),rgb(255,0,0));
-}
-.tabela-personalizada{
-  border:2px solid #17a2b8;
-  border-radius: 5px;
-}
-.tabela-personalizada tbody tr:hover{
-  color:black;
-  font-weight:bold;
-  background-color: #ffefd9;
-}
-/* Margin para a tabela datatables*/
-.dataTables_wrapper{
-  margin:0 45px 0 45px;
-}
-.m-button-table{
-  margin:0 45px 20px 45px;
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 5px;
+    transition: all 0.3s;
 }
 
-/*media form_atualizar*/
-
-#form-atualizar{
-  width:500px;
-  margin:auto;
-  border:2px solid #17a2b8;
-  border-radius: 5px;
-}
-#form-atualizar form{
-  margin:20px;
+input:focus, select:focus, textarea:focus {
+    border-color: var(--cor-primaria);
+    outline: none;
+    box-shadow: 0px 0px 8px rgba(0, 123, 255, 0.3);
 }
 
-@media (max-width:799px)
-{
-  #form-atualizar{
-    width:auto;
-    padding: 15px;
-    margin-right:25px;
-    margin-left:25px;
-  }
+/* ========= 🔘 BOTÕES ========= */
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-/* fim */
-
-#confirm-delete{
-  padding-left: 17px;
+.btn-primary {
+    background: var(--cor-primaria);
+    color: #fff;
+    border: none;
 }
 
-#confirm-delete p {
-  font-size:11pt;
-  margin:1px;
+.btn-primary:hover {
+    background: #0056b3;
 }
-
-/* form cadastrar funcionário */
 
-#form-pg-privada-id div:first-child{
-margin-top:15px;
+.btn-secondary {
+    background: #6c757d;
+    color: #fff;
 }
-#form-pg-privada-id div:last-child{
-margin-bottom:15px;
-}
 
-#form-pg-privada-id div input[type="checkbox"] {
- margin-left:2px;
+.btn-secondary:hover {
+    background: #5a6268;
 }
 
-#form-pg-privada-id div label{
-  margin-left:25px;
+.btn-danger {
+    background: var(--cor-perigo);
+    color: #fff;
 }
 
-#form-pg-privada-id{
-  border-radius:0.25rem;
-  border: 1px solid #ced4da;
+.btn-danger:hover {
+    background: #c82333;
 }
 
-#form-pg-privada-id.form-check.is-invalid{
-  border-color: #dc3545;
+/* ✅ Botão de acessibilidade */
+.btn-accessibility {
+    background: #ff9800;
+    color: #fff;
+    border-radius: 50%;
+    padding: 10px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
 }
-/*  fim */
-
-/* perfil de usuário*/
 
-#perfilUsuario{
-  width:400px;
-  margin:auto;
-  padding:0;
-  background-color:#17a2b8;
-  border: 1px solid black;
-  border-radius:5px;
+.btn-accessibility:hover {
+    background: #e68900;
 }
 
-#perfilUsuario ul{
-  padding:0;
-  margin:10px 10px 10px 10px;
-  border-radius:5px;
+/* ========= 📊 TABELAS ========= */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
-#perfilUsuario ul li{
-  background-color:rgb(226, 232, 233);
-   
-}
-#perfilUsuario ul li a{
-  background-color:#17a2b8;
-  border:1px solid #17a2b8;
-  border-radius:5px;
-  color:#212529;
-  font-weight:bold;
-  font-style:italic;
-  padding:10px 10px;
-  font-size:12pt;
-  text-align:center;
-  display:block;
 
-}
-#perfilUsuario ul li span{
-  float:right;
+.table th, .table td {
+    padding: 12px;
+    border: 1px solid var(--cor-borda);
 }
 
-#perfilUsuario ul li a:hover{
-  background-image:linear-gradient(to right,transparent,black);
-  color:white;
-  text-decoration: none;
+.table th {
+    background-color: var(--cor-primaria);
+    color: white;
 }
-/*  Fim */
-#loading{
-  font-size: 15pt;
-  font-weight: bold;
-  text-align: center;
-}
-/* Caixa */
-#form-pesquisa{
-  max-width: 900px;
-  margin-left:auto;
-  margin-right:auto;
-}
 
-#form-pesquisa:focus {
-  color: #495057;
-  background-color: #fff;
-  border-color: #17a2b8;
-  box-shadow:  0 0 5px #17a2b8;
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--cor-fundo-claro);
 }
 
-#resultado-busca div{
-  padding-left:8px;
-  background-color: rgb(226, 232, 233);
-  border:1px solid transparent;
-  padding:0;
-  max-width:900px;
-  margin-right:auto;
-  margin-left:auto;
-
-}
-#resultado-busca div:last-child{
-  border-bottom-left-radius:25px;
-  box-shadow: 2px 5px 8px #8888; 
+.table-hover tbody tr:hover {
+    background-color: var(--cor-secundaria);
+    color: white;
+    transition: background-color 0.3s ease;
 }
 
-#resultado-busca .lista-p-caixa {
-  text-decoration:none;
-  color:black;
-  font-size:11pt;
-  font-weight:500;
-  width:100%;
-  display:block;
-  padding-left:10px;
+/* ========= 📱 RESPONSIVIDADE ========= */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
 
-}
+    h1 {
+        font-size: 1.8rem;
+    }
 
-#resultado-busca .lista-p-caixa:hover{
-background-color:rgb(200,200,200);
+    .btn {
+        width: 100%;
+        padding: 14px;
+    }
 }
 
-#resultado-busca div div:last-child a{
-border-bottom-left-radius:25px;
+/* ========= ✨ ANIMAÇÕES ========= */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-#resultado-busca div div{
-  margin-top:3px;
+.alert {
+    animation: fadeIn 0.5s ease-in-out;
 }
 
-#resultado-busca div div:first-child{
-  margin-top:5px;
+/* ✅ Estilização moderna do menu */
+.navbar-nav .nav-link {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: 0.3s;
 }
 
-.f-caixa{
-  background-color: transparent;
-  color:black;
-  border:none;
+.navbar-nav .nav-link:hover {
+    background-color: var(--cor-hover);
+    border-radius: 5px;
 }
 
-.f-caixa:focus-visible {
-  outline:0;
+/* ✅ Melhor acessibilidade para daltônicos */
+.high-contrast {
+    background: black !important;
+    color: yellow !important;
 }
-
-#table-caixa #form-id, #table-caixa #form-quantidade,#table-caixa #form-codigo{
-  max-width:80px;
- }
- 
- #table-caixa #form-total, #table-caixa #form-valor, #table-caixa #form-troco{
-  font-weight:bold;
-}  
-
- #table-caixa #form-quantidade{
-  background-color:#17a2b8;
-  border:1px solid black;
-  border-radius:5px;
-  color:black;
-  font-size: 11pt;
-  box-shadow:  0 0 5px #17a2b8;
- }
-  #table-caixa #form-pagamento{
-    font-weight:600;
-    text-align:center;
-    font-size:11pt;
-    color:black;
-    background-color:rgb(230,230,230);
-  }
-
-  #table-caixa #form-pagamento:focus-visible{
-    outline:0;
-  }
-  #table-caixa #form-pagamento option{
-     font-weight:600;
-  }
-
- .table-responsive-caixa{
-   border: 2px solid #17a2b8;
-   border-radius:5px;
-   padding:0;
-   margin-bottom:30px;
-   overflow-x:auto;
- }
-
- .table-responsive-caixa #produtos-selecionados{
-   margin-bottom:0;
- }
- 
- .table-responsive-caixa #produtos-selecionados tfoot tr th:last-child{
-   border-left:5px solid rgb(230,230,230);
-   border-bottom:1px solid #17a2b8;
-    background-color:rgb(230,230,230);
-   text-align:center;
- }
-
- .table-responsive-caixa #produtos-selecionados tfoot tr:first-child{
-   border-top:2px solid;
- }
-
-  .table-responsive-caixa #produtos-selecionados tfoot tr th:last-child input{
-   width:100%;
-   text-align:center;
-   color:black;
- }
- #produtos-selecionados #form-valor::placeholder{
-   color:black;
- }
-
- #produtos-selecionados thead{
- background-color:#17a2b8;
- text-align:center;
- }
-
- #produtos-selecionados tbody{
-   color:black;
-   background-color:rgb(230,230,230);
-   text-align:center;
- }
-
-  #produtos-selecionados tbody tr td{
-    padding:6px;
-  }
-
-   #produtos-selecionados tbody tr td input{
-   text-align:center;
-   }
-   
-  .largura-table-caixa{
-    max-width:900px;
-    margin-left:auto;
-    margin-right:auto;
-  }
 
-  .form-invalid{
-    color:red;
-  }

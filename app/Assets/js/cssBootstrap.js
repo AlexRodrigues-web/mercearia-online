@@ -1,17 +1,49 @@
-var test = document.createElement("div")
-test.className = "hidden d-none"
+(function () {
+    "use strict";
 
-document.head.appendChild(test)
-var cssLoaded = window.getComputedStyle(test).display === "none"
-document.head.removeChild(test)
+    // ============================
+    // 🌟 Verificação de Bootstrap
+    // ============================
+    var test = document.createElement("div");
+    test.className = "hidden d-none";
+    document.body.appendChild(test);
 
-if (!cssLoaded) { // verificar se o css bootstrap via CDN foi carregado
-    var link = document.createElement("link");
+    var cssLoaded = false;
+    try {
+        cssLoaded = window.getComputedStyle && window.getComputedStyle(test).display === "none";
+    } catch (error) {
+        console.error("Erro ao verificar CSS:", error);
+    } finally {
+        document.body.removeChild(test);
+    }
 
-    link.type = "text/css";
-    link.rel = "stylesheet";
-    link.href = "http://localhost/mercearia/app/Assets/bootstrap/css/bootstrap.css";
+    // Carregar fallback se CSS não estiver disponível
+    if (!cssLoaded) {
+        console.warn("CSS do Bootstrap não carregado via CDN. Aplicando fallback local.");
+        carregarCssLocal();
+    }
 
-    document.head.appendChild(link);
-}
+    // ============================
+    // 📂 Função para Carregar CSS Local
+    // ============================
+    function carregarCssLocal() {
+        const link = document.createElement("link");
+        link.type = "text/css";
+        link.rel = "stylesheet";
+        link.async = true; // Carregar de forma assíncrona
 
+        // Base URL: Pega de window.BASE_URL ou cria dinamicamente
+        const baseURL = window.BASE_URL || window.location.origin + "/mercearia";
+        link.href = `${baseURL}/app/Assets/bootstrap/css/bootstrap.css`;
+
+        document.head.appendChild(link);
+
+        // Confirmar carregamento com evento onload
+        link.onload = () => {
+            console.log("CSS local carregado com sucesso.");
+        };
+        link.onerror = () => {
+            console.error("Erro ao carregar o CSS local.");
+        };
+    }
+})();

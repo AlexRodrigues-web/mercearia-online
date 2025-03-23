@@ -1,5 +1,52 @@
-#ignorar todos os arquivos da pasta vendor
-vendor/
-
-# ignorar o composer.lock
+# Ignorar diretórios e arquivos gerados automaticamente pelo Composer
+/vendor/
 composer.lock
+
+# Ignorar arquivos de cache e logs
+*.log
+*.cache
+*.tmp
+/logs/
+*.swp
+
+# Ignorar uploads e arquivos de usuário
+/public/uploads/
+*.bak
+*.old
+
+# Ignorar arquivos de configuração local
+.env
+.env.local
+.DS_Store
+
+# Ignorar arquivos específicos de editores e IDEs
+.idea/
+*.iml
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Ignorar arquivos do sistema operacional
+Thumbs.db
+ehthumbs.db
+*.lnk
+.DS_Store
+desktop.ini
+
+# Ignorar arquivos gerados por compiladores
+node_modules/
+*.pyc
+__pycache__/
+
+# Ignorar banco de dados temporários ou locais
+*.sql
+*.sqlite
+
+# Ignorar backups automáticos
+*.bak
+*.old
+*.save
+
+# Ignorar arquivos ou pastas temporárias
+/tmp/
+temp/

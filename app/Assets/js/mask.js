@@ -1,16 +1,72 @@
-let maskCnpj = $('#form-cnpj');
-maskCnpj.mask('00.000.000/0000-00');
+// Máscara para NIF (Portugal)
+let maskNif = $('#form-nif');
+maskNif.mask('000 000 000'); // NIF: 9 dígitos com espaços
 
+// Máscara para preço (BRL padrão português)
 let maskPreco = $('#form-preco');
-maskPreco.mask('000.000.000.000,00',{reverse:true});
+maskPreco.mask('#.##0,00', { reverse: true });
 
+// Máscara para quantidade (quilogramas)
 let maskKilograma = $('#form-kilograma');
-maskKilograma.mask('000.000.000.000,000',{reverse:true});
+maskKilograma.mask('#.##0,000', { reverse: true });
 
+// Máscara para quantidade (litros)
 let maskLitro = $('#form-litro');
-maskLitro.mask('000.000.000.000,000',{reverse:true});
+maskLitro.mask('#.##0,000', { reverse: true });
 
-// Adding a default function to ensure structure
+// Função padrão (placeholder)
 function placeholderFunction() {
-    console.log('Placeholder function added.');
+    console.info('Placeholder function executed.');
 }
+
+// Função para validar NIF (Portugal)
+function validarNif(nif) {
+    const nifRegex = /^[1-9]\d{8}$/; // NIF: 9 dígitos começando de 1 a 9
+    return nifRegex.test(nif);
+}
+
+// Função para exibir erros com SweetAlert2
+function mostrarErro(titulo, mensagem) {
+    Swal.fire({
+        icon: 'error',
+        title: titulo,
+        text: mensagem,
+        confirmButtonColor: '#d33'
+    });
+}
+
+// Validações ao aplicar máscaras
+$(document).ready(function () {
+
+    // Validação do NIF
+    maskNif.on('blur', function () {
+        let nif = $(this).val().replace(/\s/g, ''); // Remove espaços
+        if (!validarNif(nif)) {
+            mostrarErro('NIF inválido!', 'O NIF deve conter exatamente 9 dígitos e ser válido.');
+        }
+    });
+
+    // Validação de Preço
+    maskPreco.on('blur', function () {
+        let preco = parseFloat($(this).val().replace('.', '').replace(',', '.') || 0);
+        if (preco <= 0) {
+            mostrarErro('Preço inválido!', 'Insira um preço maior que zero.');
+        }
+    });
+
+    // Validação de Quilogramas
+    maskKilograma.on('blur', function () {
+        let kilo = parseFloat($(this).val().replace('.', '').replace(',', '.') || 0);
+        if (kilo <= 0) {
+            mostrarErro('Valor inválido!', 'Insira um valor em quilogramas maior que zero.');
+        }
+    });
+
+    // Validação de Litros
+    maskLitro.on('blur', function () {
+        let litro = parseFloat($(this).val().replace('.', '').replace(',', '.') || 0);
+        if (litro <= 0) {
+            mostrarErro('Valor inválido!', 'Insira um valor em litros maior que zero.');
+        }
+    });
+});
