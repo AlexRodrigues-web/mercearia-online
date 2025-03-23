@@ -38,3 +38,6 @@ Bem-vindo ao **Mercearia**, um sistema de gerenciamento de mercearia completo, d
 1. Clone o repositório:
    ```bash
    git clone https://github.com/AlexRodrigues-web/mercearia.git
+
+   Status do Projeto
+🚧 Em desenvolvimento - O projeto está sendo estruturado e evoluirá com novas funcionalidades.
