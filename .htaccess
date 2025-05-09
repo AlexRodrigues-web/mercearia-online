@@ -1,0 +1,37 @@
+# Ativar o Rewrite Engine
+RewriteEngine On
+
+# Corrige problemas com barras duplas na URL
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s(/.+?)/{2,}\sHTTP [NC]
+RewriteRule ^ %1 [R=301,L]
+
+# Permite acesso direto a arquivos e diretórios reais (exemplo: CSS, JS, imagens)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Permite acesso correto a arquivos estáticos (CSS, JS, imagens, fontes, vídeos, etc.)
+RewriteCond %{REQUEST_URI} \.(css|js|png|jpg|jpeg|gif|ico|woff|woff2|ttf|svg|map|json|webp|eot|otf|mp4|webm|ogg)$ [NC]
+RewriteRule . - [L]
+
+# Evita redirecionamentos infinitos e problemas de múltiplos redirecionamentos
+RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+
+# Força URLs sem "index.php" (se alguém tentar acessar diretamente)
+RewriteCond %{THE_REQUEST} /index\.php [NC]
+RewriteRule ^index\.php(.*)$ /$1 [R=301,L]
+
+# Previne acesso direto a arquivos sensíveis (exemplo: arquivos de configuração)
+<FilesMatch "(\.env|\.htaccess|\.htpasswd|config\.php|database\.php)">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Redireciona todas as requisições HTTP para HTTPS (se necessário)
+# Descomente se quiser forçar HTTPS:
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirecionamento para erro 404 personalizado (caso necessário)
+ErrorDocument 404 /erro/404

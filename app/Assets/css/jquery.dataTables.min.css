@@ -1,0 +1,116 @@
+@media (prefers-color-scheme: dark) {
+    :root {
+        --tabela-fundo: #222;
+        --tabela-texto: #f8f9fa;
+        --tabela-borda: #555;
+        --tabela-hover: #333;
+        --tabela-selecionado: #444;
+        --tabela-stripe: #292929;
+    }
+}
+
+:root {
+    --tabela-fundo: #ffffff;
+    --tabela-texto: #212529;
+    --tabela-borda: #ddd;
+    --tabela-hover: #f6f6f6;
+    --tabela-selecionado: #b0bed9;
+    --tabela-stripe: #f9f9f9;
+}
+
+table.dataTable {
+    width: 100%;
+    margin: 10px 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: var(--tabela-fundo);
+    color: var(--tabela-texto);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+table.dataTable thead th,
+table.dataTable tfoot th {
+    font-weight: bold;
+    background: var(--tabela-borda);
+    color: var(--tabela-texto);
+    text-align: left;
+    padding: 12px 18px;
+    border-bottom: 2px solid var(--tabela-borda);
+}
+
+table.dataTable thead .sorting {
+    background: url("../images/sort_both.png") no-repeat center right;
+}
+
+table.dataTable thead .sorting_asc {
+    background: url("../images/sort_asc.png") no-repeat center right;
+}
+
+table.dataTable thead .sorting_desc {
+    background: url("../images/sort_desc.png") no-repeat center right;
+}
+
+table.dataTable tbody tr {
+    background-color: var(--tabela-fundo);
+    transition: background 0.3s ease-in-out;
+}
+
+table.dataTable.stripe tbody tr.odd {
+    background-color: var(--tabela-stripe);
+}
+
+table.dataTable tbody tr.selected {
+    background-color: var(--tabela-selecionado);
+    font-weight: bold;
+}
+
+table.dataTable.hover tbody tr:hover {
+    background-color: var(--tabela-hover);
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+table.dataTable tbody th,
+table.dataTable tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--tabela-borda);
+}
+
+@media screen and (max-width: 767px) {
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        float: none;
+        text-align: center;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        margin-top: 0.5em;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        float: none;
+        text-align: center;
+    }
+    .dataTables_wrapper .dataTables_filter {
+        margin-top: 0.5em;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+table.dataTable {
+    animation: fadeIn 0.4s ease-in-out;
+}

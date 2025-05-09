@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+:root {
+    --cor-primaria: #2c3e50;
+    --cor-primaria-hover: #1a252f;
+    --cor-secundaria: #16a085;
+    --cor-sucesso: #27ae60;
+    --cor-perigo: #e74c3c;
+    --cor-fundo: #f5f7fa;
+    --cor-texto: #2d3436;
+    --cor-branco: #ffffff;
+    --cor-borda: #dcdde1;
+    --cor-shadow: rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem;
+}
+
+/* NAVBAR */
+nav.navbar {
+    background-color: var(--cor-primaria);
+    padding: 1rem 2rem;
+}
+
+nav.navbar a.nav-link {
+    color: var(--cor-branco) !important;
+    margin: 0 0.75rem;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+nav.navbar a.nav-link:hover {
+    color: var(--cor-secundaria) !important;
+}
+
+/* TÍTULOS */
+h1, h2, h3 {
+    color: var(--cor-primaria);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2.2rem;
+    text-align: center;
+}
+
+/* FORMULÁRIOS */
+form {
+    background-color: var(--cor-branco);
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 15px var(--cor-shadow);
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--cor-borda);
+    transition: 0.2s;
+    font-size: 1rem;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--cor-secundaria);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(22, 160, 133, 0.1);
+}
+
+/* BOTÕES */
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--cor-primaria);
+    color: var(--cor-branco);
+}
+
+.btn-primary:hover {
+    background-color: var(--cor-primaria-hover);
+}
+
+.btn-success {
+    background-color: var(--cor-sucesso);
+    color: var(--cor-branco);
+}
+
+.btn-success:hover {
+    background-color: #219150;
+}
+
+.btn-danger {
+    background-color: var(--cor-perigo);
+    color: var(--cor-branco);
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+/* TABELAS */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: var(--cor-branco);
+    box-shadow: 0 1px 5px var(--cor-shadow);
+}
+
+.table th, .table td {
+    padding: 14px;
+    border: 1px solid var(--cor-borda);
+    text-align: center;
+}
+
+.table th {
+    background-color: var(--cor-primaria);
+    color: #fff;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+    background-color: #f4f4f4;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(44, 62, 80, 0.05);
+}
+
+/* ALERTAS */
+.alert {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #dff0d8;
+    color: #3c763d;
+}
+
+.alert-danger {
+    background: #f2dede;
+    color: #a94442;
+}
+
+.alert-warning {
+    background: #e3e3fc;
+    color: #8a6d3b;
+}
+
+/* RESPONSIVO */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    nav.navbar {
+        padding: 0.75rem 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    input, select, textarea {
+        font-size: 1rem;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+}
+
+/* FOOTER */
+footer {
+    background: linear-gradient(90deg,rgb(0, 0, 0),rgb(69, 69, 69),rgb(115, 114, 114));
+    color: white;
+    padding: 30px 0;
+    text-align: center;
+    font-size: 0.95rem;
+    margin-top: 2rem;
+    border-top: 4px solid var(--cor-secundaria);
+    backdrop-filter: blur(3px);
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.08);
+}
+
+
+
+/* ANIMAÇÃO */
+.fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

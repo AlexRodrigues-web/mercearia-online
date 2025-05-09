@@ -1,0 +1,75 @@
+.mt-6 {
+    margin-top: 4rem !important;
+}
+.mb-6 {
+    margin-bottom: 4rem !important;
+}
+
+@media (max-width: 768px) {
+    .mt-6, .mb-6 {
+        margin-top: 2rem !important;
+        margin-bottom: 2rem !important;
+    }
+}
+
+.bg-pt-br {
+    background: linear-gradient(
+        90deg,
+        #4CAF50,   /* verde médio elegante */
+        #FFEB3B,   /* amarelo suave */
+        #E57373    /* vermelho claro */
+    );
+    color: #fff;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.text-pt-br {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(
+        90deg,
+        #4CAF50,
+        #FFEB3B,
+        #E57373
+    );
+    font-weight: 600;
+}
+
+.btn-alt {
+    background-color: #FFEB3B;
+    color: #333;
+    border: 1px solid #e0c200;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-alt:hover {
+    background-color: #fdd835;
+    color: #111;
+    transform: scale(1.03);
+}
+
+.card-promocao {
+    border: 2px dashed #fbc02d;
+    background-color: #fffde7;
+    padding: 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transition: transform 0.2s;
+}
+
+.card-promocao:hover {
+    transform: translateY(-3px);
+}
+
+.texto-destaque {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #d32f2f;
+    letter-spacing: 0.5px;
+}
+

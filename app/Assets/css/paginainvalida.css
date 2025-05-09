@@ -1,0 +1,96 @@
+
+@media (prefers-color-scheme: dark) {
+  :root {
+      --cor-principal: #17a2b8;
+      --cor-fundo: #222;
+      --cor-texto: #f8f9fa;
+      --cor-hover: #1c7c92;
+      --cor-botao-texto: white;
+  }
+}
+
+:root {
+  --cor-principal: #17a2b8;
+  --cor-fundo: #ffffff;
+  --cor-texto: #212529;
+  --cor-hover: #138496;
+  --cor-botao-texto: black;
+}
+
+.alertaPagina {
+  margin-top: 50px;
+  text-align: center;
+  background-color: var(--cor-fundo);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.alertaPagina h1 {
+  color: var(--cor-principal);
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-bottom: 20px;
+}
+
+.alertaPagina a button {
+  display: block;
+  margin: 30px auto 15px auto;
+  width: 35%;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--cor-botao-texto);
+  border: 2px solid var(--cor-principal);
+  border-radius: 5px;
+  background: linear-gradient(to bottom right, white, var(--cor-principal));
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.alertaPagina a button:hover {
+  background: linear-gradient(to bottom right, var(--cor-principal), white);
+  border-color: var(--cor-hover);
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 767px) {
+  .alertaPagina {
+      padding: 20px;
+  }
+  
+  .alertaPagina h1 {
+      font-size: 2rem;
+  }
+
+  .alertaPagina a button {
+      width: 80%;
+      padding: 15px;
+      font-size: 1.2rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .alertaPagina h1 {
+      font-size: 2.2rem;
+  }
+  .alertaPagina a button {
+      width: 50%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
